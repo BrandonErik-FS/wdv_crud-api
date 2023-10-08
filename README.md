@@ -1,0 +1,3 @@
+# About This Repo
+
+This mono repo contains a MERN stack application featuring an Express REST API backend and a Vite React frontend. Utilizing MongoDB atlas for live production data and Heroku for deployment, this application allows users to maintain a database of pets in a pet store. Each entry for a pet contains the animal's name, breed, weight, and age, along with the original date it was added to the database. Both the Express REST API backend and Vite React frontend provide API routes and the frontend user interface necessary to create, read, update, and delete information from the MongoDB atlas database. This project was built during Week 2 of the Deployment of Web Applications class as a part of the Web Development degree program at Full Sail University.

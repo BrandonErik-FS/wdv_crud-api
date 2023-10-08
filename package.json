@@ -1,0 +1,25 @@
+{
+    "name": "wdv_crud-api",
+    "version": "1.0.0",
+    "description": "",
+    "engines": {
+        "node": "18.18.0",
+        "npm": "10.2.0"
+    },
+    "main": "index.js",
+    "scripts": {
+        "install-reactjs": "npm install --prefix reactjs",
+        "install-api": "npm install --prefix api",
+        "build-reactjs": "npm run build --prefix reactjs",
+        "heroku-postbuild": "concurrently \"npm:install-*\" \"npm:build-*\"",
+        "start": "npm start --prefix api",
+        "dev": "concurrently \"npm run dev:api\" \"npm run dev:react\"",
+        "dev:react": "cd reactjs && npm run dev",
+        "dev:api": "cd api && npm run dev"
+    },
+    "author": "Erik Brandon",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^8.2.1"
+    }
+}

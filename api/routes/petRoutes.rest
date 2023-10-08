@@ -1,0 +1,33 @@
+GET http://localhost:3000/api/v1/pets
+
+###
+
+GET http://localhost:3000/api/v1/pets/ID
+
+###
+
+POST http://localhost:3000/api/v1/pets/
+Content-Type: application/json
+
+{
+    "name": "Maximus",
+    "breed": "Belgian Malinois",
+    "weight": 65,
+    "age": 4
+}
+
+###
+
+PATCH http://localhost:3000/api/v1/pets/ID
+Content-Type: application/json
+
+{
+    "name": "George",
+    "breed": "Terrier",
+    "weight": 25,
+    "age": 2
+}
+
+###
+
+DELETE http://localhost:3000/api/v1/pets/ID
