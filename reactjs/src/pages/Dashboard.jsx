@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import formatDate from '../utils/FormatDate';
+import formatDate from '../utils/formatDate';
 
 function Dashboard() {
     const [pets, setPets] = useState(null);
