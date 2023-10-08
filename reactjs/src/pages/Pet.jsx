@@ -13,7 +13,7 @@ function Dashboard() {
     const API_BASE =
         process.env.NODE_ENV === 'development'
             ? 'http://localhost:3000'
-            : process.env.REACT_APP_BASE_URL;
+            : '';
 
     const { id } = useParams();
     const navigate = useNavigate();
