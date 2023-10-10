@@ -1,45 +1,33 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-import formatDate from '../utils/formatDate';
+import PetCard from '../components/PetCard';
+import AddPetButton from '../components/AddPetButton';
 
 function Dashboard() {
     const [pets, setPets] = useState(null);
     const [error, setError] = useState(null);
 
     const API_BASE =
-        process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000'
-            : '';
+        process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 
     const navigate = useNavigate();
 
-    const isFetchingPets = useRef(false)
-    useEffect(() => {
-        if (!isFetchingPets.current) {
-            fetchPets();
-        }
-
-        return () => {
-            isFetchingPets.current = true;
-        };
-    }, []);
-
-    const fetchPets = async () => {
+    const fetchPets = useCallback(async () => {
         try {
             await fetch(`${API_BASE}/api/v1/pets`)
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log(data)
                     setPets(data);
                 });
         } catch (error) {
             setError(error.message || 'Unexpected Error');
         }
-    };
+    }, [API_BASE]);
 
     const editPet = (id) => {
-        navigate(`/pet/${id}`)
+        navigate(`/pet/${id}`);
     };
 
     const deletePet = async (id) => {
@@ -53,42 +41,47 @@ function Dashboard() {
         }
     };
 
+    const isFetchingPets = useRef(false);
+    useEffect(() => {
+        if (!isFetchingPets.current) {
+            fetchPets();
+        }
+
+        return () => {
+            isFetchingPets.current = true;
+        };
+    }, [fetchPets]);
+
     return (
         <>
-            <h1>Pets</h1>
+            <H1Styled>Pets</H1Styled>
             {pets && pets.length > 0 ? (
                 pets.map((pet) => (
-                    <article key={pet._id}>
-                        <Link to={`/pet/${pet._id}`}>
-                            <h2>{pet.name}</h2>
-                        </Link>
-                        <p>
-                            Breed: <span>{pet.breed}</span>
-                        </p>
-                        <p>
-                            Weight: <span>{pet.weight}</span>
-                        </p>
-                        <p>
-                            Age: <span>{pet.age}</span>
-                        </p>
-                        <p>
-                            Date Added:{' '}
-                            <span>{formatDate(pet.created_at)}</span>
-                        </p>
-                        <button onClick={() => editPet(pet._id)}>Edit</button>
-                        <button onClick={() => deletePet(pet._id)}>
-                            Delete
-                        </button>
-                    </article>
+                    <PetCard
+                        key={pet._id}
+                        id={pet._id}
+                        name={pet.name}
+                        breed={pet.breed}
+                        weight={pet.weight}
+                        age={pet.age}
+                        created_at={pet.created_at}
+                        editPet={() => editPet(pet._id)}
+                        deletePet={() => deletePet(pet._id)}
+                    />
                 ))
             ) : (
                 <>
-                    <h2>No Pets</h2>
+                    <H2Styled>No Pets</H2Styled>
                 </>
             )}
-            <Link to='/pet'>Add New</Link>
+            <AddPetButton link='/pet' text='Add Pet' />
         </>
     );
 }
 
 export default Dashboard;
+
+const H1Styled = styled.h1`
+    margin: 0;
+`;
+const H2Styled = styled.h2``;
