@@ -7,7 +7,6 @@ import AddPetButton from '../components/AddPetButton';
 
 function Dashboard() {
     const [pets, setPets] = useState(null);
-    const [error, setError] = useState(null);
 
     const API_BASE =
         process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
@@ -22,7 +21,7 @@ function Dashboard() {
                     setPets(data);
                 });
         } catch (error) {
-            setError(error.message || 'Unexpected Error');
+            console.error(error.message || 'Unexpected Error');
         }
     }, [API_BASE]);
 
@@ -37,7 +36,7 @@ function Dashboard() {
             });
             fetchPets();
         } catch (error) {
-            setError(error.message || 'Unexpected Error');
+            console.error(error.message || 'Unexpected Error');
         }
     };
 

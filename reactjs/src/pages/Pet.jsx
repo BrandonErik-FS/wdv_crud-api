@@ -9,7 +9,6 @@ function Dashboard() {
         weight: '',
         age: ''
     });
-    const [error, setError] = useState(null);
 
     const API_BASE =
         process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
@@ -36,7 +35,7 @@ function Dashboard() {
                     }
                 });
         } catch (error) {
-            setError(error.message || 'Unexpected Error');
+            console.error(error.message || 'Unexpected Error');
         }
     }, [id, API_BASE, navigate]);
 
@@ -59,7 +58,7 @@ function Dashboard() {
             window.history.replaceState({}, document.title);
             navigate('/', { replace: true });
         } catch (error) {
-            setError(error.message || 'Unexpected Error');
+            console.error(error.message || 'Unexpected Error');
         }
     };
 
