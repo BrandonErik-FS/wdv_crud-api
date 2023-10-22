@@ -52,11 +52,21 @@ function Account() {
                   });
         } catch (error) {
             console.error(error || 'Unexpected Error');
-            error.response.status === 401
-                ? setError(
-                      'Incorrect Email or Password. Double-check Your Credentials & Try Again.'
-                  )
-                : setError('Unexpected Error. Please Try Again.');
+
+            if (error.code === 'ERR_NETWORK') {
+                setError(`${error.message}. Please Try Again.`);
+                return;
+            }
+
+            if (
+                error.code === 'ERR_BAD_REQUEST' &&
+                error.response.data === 'Unauthorized'
+            ) {
+                setError(
+                    'Incorrect Email or Password. Double-check Your Credentials & Try Again.'
+                );
+                return;
+            }
         }
     };
 
