@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import PetsService from '../services/petsService';
+import { UserContext } from '../contexts/UserContext';
 
 function Dashboard() {
+    const { currentUser } = useContext(UserContext);
     const [values, setValues] = useState({
         name: '',
         breed: '',
@@ -10,51 +13,30 @@ function Dashboard() {
         age: ''
     });
 
-    const API_BASE =
-        process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
-
     const { id } = useParams();
     const navigate = useNavigate();
 
     const fetchPet = useCallback(async () => {
         try {
-            await fetch(`${API_BASE}/api/v1/pets/${id}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.message === 'Pet Not Found') {
-                        setValues({
-                            name: '',
-                            breed: '',
-                            weight: '',
-                            age: ''
-                        });
-                        window.history.replaceState({}, document.title);
-                        navigate('/pet', { replace: true });
-                    } else {
-                        setValues(data);
-                    }
-                });
+            PetsService.fetchPet(id).then((response) => {
+                if (response.data.message === 'Pet Not Found') {
+                    setValues({ name: '', breed: '', weight: '', age: '' });
+                    window.history.replaceState({}, document.title);
+                    navigate('/pet', { replace: true });
+                } else {
+                    setValues(response.data);
+                }
+            });
         } catch (error) {
             console.error(error.message || 'Unexpected Error');
         }
-    }, [id, API_BASE, navigate]);
+    }, [id, navigate]);
 
     const savePet = async () => {
         try {
-            await fetch(
-                `${
-                    id
-                        ? `${API_BASE}/api/v1/pets/${id}`
-                        : `${API_BASE}/api/v1/pets`
-                }`,
-                {
-                    method: `${id ? 'PATCH' : 'POST'}`,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(values)
-                }
-            );
+            id
+                ? PetsService.updatePet(id, values)
+                : PetsService.createPet(values);
             window.history.replaceState({}, document.title);
             navigate('/', { replace: true });
         } catch (error) {
@@ -64,6 +46,11 @@ function Dashboard() {
 
     const isFetchingPet = useRef(false);
     useEffect(() => {
+        if (currentUser === false) {
+            navigate('/');
+            return;
+        }
+
         if (!isFetchingPet.current && id) {
             fetchPet();
         }
@@ -71,7 +58,7 @@ function Dashboard() {
         return () => {
             isFetchingPet.current = true;
         };
-    }, [fetchPet, id]);
+    }, [fetchPet, id, currentUser, navigate]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -153,6 +140,7 @@ export default Dashboard;
 const H1Styled = styled.h1`
     margin: 0;
 `;
+
 const FormStyled = styled.form`
     box-sizing: border-box;
     width: 100%;
@@ -168,9 +156,11 @@ const FormStyled = styled.form`
         grid-template-columns: repeat(2, 1fr);
     }
 `;
+
 const LabelStyled = styled.label`
     font-weight: bold;
 `;
+
 const InputStyled = styled.input`
     width: 100%;
     box-sizing: border-box;
@@ -185,6 +175,7 @@ const InputStyled = styled.input`
         border: 2px solid #af1827;
     }
 `;
+
 const ButtonStyled = styled.button`
     padding: 1rem;
     background-color: #af1827;

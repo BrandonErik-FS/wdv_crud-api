@@ -14,7 +14,7 @@ const tokenForUser = (user) => {
 
 exports.login = (req, res, next) => {
     const user = req.user;
-    res.send({ token: tokenForUser(user), user_id: user._id });
+    res.send({ token: tokenForUser(user), loggedIn: true });
 };
 
 exports.signup = async (req, res, next) => {
@@ -35,7 +35,7 @@ exports.signup = async (req, res, next) => {
         } else {
             const newUser = await User.create({ email, password });
             res.status(201).json({
-                user_id: newUser._id,
+                loggedIn: true,
                 token: tokenForUser(newUser)
             });
         }

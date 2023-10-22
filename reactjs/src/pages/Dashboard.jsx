@@ -1,40 +1,29 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import PetCard from '../components/PetCard';
 import AddPetButton from '../components/AddPetButton';
+import PetsService from '../services/petsService';
+import { UserContext } from '../contexts/UserContext';
 
 function Dashboard() {
+    const { currentUser } = useContext(UserContext);
     const [pets, setPets] = useState(null);
-
-    const API_BASE =
-        process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const navigate = useNavigate();
-
-    const fetchPets = useCallback(async () => {
-        try {
-            await fetch(`${API_BASE}/api/v1/pets`)
-                .then((res) => res.json())
-                .then((data) => {
-                    setPets(data);
-                });
-        } catch (error) {
-            console.error(error.message || 'Unexpected Error');
-        }
-    }, [API_BASE]);
 
     const editPet = (id) => {
         navigate(`/pet/${id}`);
     };
 
-    const deletePet = async (id) => {
+    const deletePet = (id) => {
         try {
-            await fetch(`${API_BASE}/api/v1/pets/${id}`, {
-                method: 'DELETE'
+            PetsService.deletePet(id);
+            PetsService.fetchPets().then((response) => {
+                setPets(response.data);
             });
-            fetchPets();
         } catch (error) {
             console.error(error.message || 'Unexpected Error');
         }
@@ -42,18 +31,38 @@ function Dashboard() {
 
     const isFetchingPets = useRef(false);
     useEffect(() => {
+        setErrorMessage(null);
+
+        if (currentUser === false) {
+            setErrorMessage('Sign Up or Log In to View Inventory');
+            return;
+        }
+
         if (!isFetchingPets.current) {
-            fetchPets();
+            PetsService.fetchPets()
+                .then((response) => {
+                    setPets(response.data);
+                })
+                .catch((error) => {
+                    setErrorMessage(error.response.data || 'Unexpected Error');
+                });
         }
 
         return () => {
             isFetchingPets.current = true;
         };
-    }, [fetchPets]);
+    }, [currentUser]);
 
     return (
         <>
-            <H1Styled>Pets</H1Styled>
+            {!errorMessage ? (
+                <SectionStyled>
+                    <H1Styled>Pets</H1Styled>
+                    <AddPetButton link='/pet' text='Add Pet' />
+                </SectionStyled>
+            ) : (
+                <H1Styled>Pets</H1Styled>
+            )}
             {pets && pets.length > 0 ? (
                 pets.map((pet) => (
                     <PetCard
@@ -68,12 +77,11 @@ function Dashboard() {
                         deletePet={() => deletePet(pet._id)}
                     />
                 ))
+            ) : pets && pets.length === 0 ? (
+                <H2Styled>No Pets Found</H2Styled>
             ) : (
-                <>
-                    <H2Styled>No Pets</H2Styled>
-                </>
+                <H2Styled>{errorMessage}</H2Styled>
             )}
-            <AddPetButton link='/pet' text='Add Pet' />
         </>
     );
 }
@@ -83,4 +91,17 @@ export default Dashboard;
 const H1Styled = styled.h1`
     margin: 0;
 `;
-const H2Styled = styled.h2``;
+
+const H2Styled = styled.h2`
+    margin: 0;
+    text-align: center;
+`;
+
+const SectionStyled = styled.section`
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`;

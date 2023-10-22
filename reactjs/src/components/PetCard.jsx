@@ -5,7 +5,7 @@ import formatDate from '../utils/formatDate';
 const PetCard = (props) => {
     return (
         <ArticleStyled>
-            <LeftDivStyled>
+            <LeftSectionStyled>
                 <H2Styled>{props.name}</H2Styled>
                 <UlStyled>
                     <LiStyled>
@@ -22,7 +22,7 @@ const PetCard = (props) => {
                         <SpanStyled>{formatDate(props.created_at)}</SpanStyled>
                     </LiStyled>
                 </UlStyled>
-            </LeftDivStyled>
+            </LeftSectionStyled>
             <RightDivStyled>
                 <InvertedButtonStyled onClick={props.editPet}>
                     Edit
@@ -63,12 +63,14 @@ const ArticleStyled = styled.article`
         flex-direction: row;
     }
 `;
-const LeftDivStyled = styled.div`
+
+const LeftSectionStyled = styled.section`
     flex: 2;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 `;
+
 const RightDivStyled = styled.div`
     width: 100%;
     flex: 1;
@@ -79,6 +81,7 @@ const RightDivStyled = styled.div`
         flex-direction: row;
     }
 `;
+
 const H2Styled = styled.h2`
     text-align: center;
     margin: 0;
@@ -86,6 +89,7 @@ const H2Styled = styled.h2`
         text-align: left;
     }
 `;
+
 const ButtonStyled = styled.button`
     flex: 1;
     background-color: #af1827;
@@ -106,6 +110,7 @@ const ButtonStyled = styled.button`
         color: #af1827;
     }
 `;
+
 const InvertedButtonStyled = styled.button`
     flex: 1;
     background-color: #ffffff;
@@ -126,6 +131,7 @@ const InvertedButtonStyled = styled.button`
         color: #ffffff;
     }
 `;
+
 const UlStyled = styled.ul`
     margin: 0;
     padding: 0;
@@ -137,6 +143,7 @@ const UlStyled = styled.ul`
         flex-direction: row;
     }
 `;
+
 const LiStyled = styled.li`
     font-weight: bold;
     text-align: center;
@@ -144,6 +151,7 @@ const LiStyled = styled.li`
         text-align: left;
     }
 `;
+
 const SpanStyled = styled.span`
     font-weight: normal;
 `;
