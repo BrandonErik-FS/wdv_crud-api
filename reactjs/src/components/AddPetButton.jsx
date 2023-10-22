@@ -14,10 +14,7 @@ AddPetButton.propTypes = {
 };
 
 const LinkStyled = styled(Link)`
-    position: fixed;
-    bottom: 0;
     padding: 1rem;
-    margin: 2rem;
     background-color: #af1827;
     color: #ffffff;
     display: block;
@@ -33,8 +30,5 @@ const LinkStyled = styled(Link)`
     &:focus-visible {
         background-color: #ffffff;
         color: #af1827;
-    }
-    @media (min-width: 768px) {
-        right: 0;
     }
 `;
